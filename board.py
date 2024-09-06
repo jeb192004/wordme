@@ -6,13 +6,14 @@ class Board:
     def __init__(self, page):
         self.page = page
         self.board_size = 15
-        self.space_width = 22
-        self.space_height = 22
+        self.space_size = 22
+        self.space_size = 22
+        self.space_text_size=8
         self.first_letter_position = 0
         self.board = ft.GridView(
             expand=1,
             runs_count=self.board_size,
-            max_extent=self.space_width,
+            max_extent=self.space_size,
             child_aspect_ratio=1.0,
             spacing=0.5,
             run_spacing=1,
@@ -51,9 +52,9 @@ class Board:
                         [ft.DragTarget(
                             group=drag_group,
                             content=ft.Container(
-                                content=ft.Text(tile_text, color=text_color),
-                                width=self.space_width,
-                                height=self.space_height,
+                                content=ft.Text(tile_text, color=text_color, size=self.space_text_size),
+                                width=self.space_size,
+                                height=self.space_size,
                                 bgcolor=background_color,
                                 border_radius=5,
                                 alignment=ft.alignment.center,
@@ -64,13 +65,13 @@ class Board:
                         ),
                         
                     ],
-                    width=self.space_width,
-                    height=self.space_height,
+                    width=self.space_size,
+                    height=self.space_size,
                 )
                 
             )
         # Ensure the grid stays at the correct aspect ratio and doesn't stretch
-        self.board.width = self.space_width * self.board_size + (self.board_size - 1) * 1  # Grid width based on square size and spacing
+        self.board.width = self.space_size * self.board_size + (self.board_size - 1) * 1  # Grid width based on square size and spacing
 
         return self.board
 

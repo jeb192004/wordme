@@ -6,8 +6,8 @@ from player import Player
 def main(page: ft.Page):
     page.title = "WordMe"
     page.bgcolor="white"
-    page.window.width = 400
-    page.window.min_width = 420
+    #page.window.width = 420
+    #page.window.min_width = 420
 
     bd = Board(page)
     p = Player(page, bd)

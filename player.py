@@ -16,7 +16,11 @@ class Player:
             controls=[ft.Text(player_name, color="black") for player_name in self.player_names],
             alignment=ft.MainAxisAlignment.CENTER,
         )
-        return player_name_row
+        player_name_container=ft.Container(
+            content=player_name_row,
+            margin=ft.Margin(60, 5, 5, 5),
+        )
+        return player_name_container
     
     def set_up_player(self):
         # Player letter tiles

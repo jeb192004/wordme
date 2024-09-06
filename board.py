@@ -1,0 +1,150 @@
+import flet as ft
+from drag_controlls import DragControlls
+
+class Board:
+    
+    def __init__(self, page):
+        self.page = page
+        self.board_size = 15
+        self.space_width = 22
+        self.space_height = 22
+        self.first_letter_position = 0
+        self.board = ft.GridView(
+            expand=1,
+            runs_count=self.board_size,
+            max_extent=self.space_width,
+            child_aspect_ratio=1.0,
+            spacing=0.5,
+            run_spacing=1,
+        )
+
+        self.dc = DragControlls(self.page, self)
+
+    def set_up_board(self): 
+        drag_group = "unavailable" 
+        start_space = [112]
+        tw_space = [0, 7, 14, 105, 119, 210, 217, 224]
+        dw_space = [16, 28, 32,42, 48,56, 64, 70, 154, 160, 168, 176, 182, 192, 196,208]
+        tl_space = [20, 24, 76, 80, 84, 88, 136, 140, 144, 148, 200, 204]
+        dl_space = [3, 11, 36, 38, 45, 52, 59, 92, 96, 98, 101, 108, 115, 122, 126, 128, 131, 165, 172, 179, 186, 188, 213, 221]
+        for i in range(self.board_size * self.board_size):
+            text_color = "white"
+            tile_text = ""
+            background_color = ft.colors.BLUE_GREY_100
+            if i in tw_space:
+                tile_text = "TW"
+                background_color = ft.colors.RED_400
+            elif i in start_space:
+                tile_text = "S"
+                background_color = ft.colors.PURPLE_200
+            elif i in dw_space:
+                tile_text = "DW"
+                background_color = ft.colors.ORANGE_500
+            elif i in tl_space:
+                tile_text = "TL"
+                background_color = ft.colors.BLUE_800
+            elif i in dl_space:
+                tile_text = "DL"
+                background_color = ft.colors.BLUE_400
+            self.board.controls.append(
+                ft.Stack(
+                        [ft.DragTarget(
+                            group=drag_group,
+                            content=ft.Container(
+                                content=ft.Text(tile_text, color=text_color),
+                                width=self.space_width,
+                                height=self.space_height,
+                                bgcolor=background_color,
+                                border_radius=5,
+                                alignment=ft.alignment.center,
+                            ),
+                            on_will_accept=self.dc.drag_will_accept,
+                            on_accept=lambda e: self.dc.drag_accept(e),
+                            on_leave=self.dc.drag_leave,
+                        ),
+                        
+                    ],
+                    width=self.space_width,
+                    height=self.space_height,
+                )
+                
+            )
+        # Ensure the grid stays at the correct aspect ratio and doesn't stretch
+        self.board.width = self.space_width * self.board_size + (self.board_size - 1) * 1  # Grid width based on square size and spacing
+
+        return self.board
+
+    def get_board_index(self, board, index):
+        #row = x
+        #col = y
+        #index = row * self.board_size + col
+        return board.controls[index]
+    
+    def check_pos_available(self, board):
+        space = self.get_board_index(board, 112)
+        if len(space.controls) > 1:
+            return False
+        else:
+            return True
+        
+    def update_group(self, index, group):
+        isAvailable = self.check_pos_available(self.board)
+        if isAvailable:
+            space = self.get_board_index(self.board, index)
+            #print(space.controls[0])
+            space.controls[0].group = group
+            #print(space.controls[0].group)
+            space.update()
+        else:
+            pass
+        
+    def get_xy_from_index(self, index):
+        row = index // self.board_size
+        col = index % self.board_size
+        return [row, col]
+    
+    def update_board(self, tile_rowCount, index):
+        if tile_rowCount == 6:
+            self.first_letter_position = index
+            indexArray = [index-15, index-30, index-45, index-60, index-75, index-90,
+                          index+15, index+30, index+45, index+60, index+75, index+90,
+                          index-1, index-2, index-3, index-4, index-5, index-6,
+                          index+1, index+2, index+3, index+4, index+5, index+6]
+            self.highlightAvailableSpace(index, "available", indexArray)
+        elif tile_rowCount == 5:
+            self.reset_spaces("available")
+            if index < self.first_letter_position-7 or index > self.first_letter_position+7:
+                indexArray = [self.first_letter_position-1, self.first_letter_position-2, self.first_letter_position-3, self.first_letter_position-4, self.first_letter_position-5,
+                              self.first_letter_position+1, self.first_letter_position+2, self.first_letter_position+3, self.first_letter_position+4, self.first_letter_position+5, self.first_letter_position+6]
+            self.highlightAvailableSpace(index, "available", indexArray)
+                
+    def highlightAvailableSpace(self, index, group, indexArray):
+        print(index, indexArray)
+        for i in indexArray:
+            space = self.board.controls[i]
+            space.controls[0].group = group
+            space.controls[0].content.border=ft.Border(
+                    left=ft.BorderSide(2, "green"),
+                    top=ft.BorderSide(2, "green"),
+                    right=ft.BorderSide(2, "green"),
+                    bottom=ft.BorderSide(2, "green"),
+                )
+            print(space.controls[0].content)
+            space.update()
+        
+    def get_index_from_group(self, group):
+        for index, control in enumerate(self.board.controls):
+            #print(control.controls[0].group, index)
+            if control.controls[0].group == group:
+                print(f"'current_play' found at index: {index}")
+                return index
+
+    def reset_spaces(self, group):
+        for index, control in enumerate(self.board.controls):
+            print(control.controls[0].group, index)
+            if control.controls[0].group == group:
+                control.controls[0].group = "unavailable"
+                control.controls[0].content.border = None
+                self.board.update()
+            
+    

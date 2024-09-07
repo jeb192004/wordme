@@ -3,12 +3,12 @@ from tiles import Tiles
 from drag_controlls import DragControlls
 
 class Player:
-    def __init__(self, page, bd):
+    def __init__(self, page, dc):
         self.page = page
-        self.bd = bd
+        self.player_tile_size = 50
+        self.player_tile_text_size = 20
         self.player_names = ["Player 1", "Player 2"]
-        self.tiles = Tiles()
-        self.dc = DragControlls(self.page, self.bd)
+        self.dc = dc
     
     def set_up_player_names(self):
         # Create player name row
@@ -18,7 +18,7 @@ class Player:
         )
         player_name_container=ft.Container(
             content=player_name_row,
-            margin=ft.Margin(60, 5, 5, 5),
+            margin=ft.Margin(5, 5, 5, 5),
         )
         return player_name_container
     
@@ -32,12 +32,13 @@ class Player:
                 ft.Draggable(
                     group="available",
                     content=ft.Container(
-                        content=ft.Text(tile, color="black"),
-                        width=30,
-                        height=30,
+                        content=ft.Text(tile, color="black", size=self.player_tile_text_size),
+                        width=self.player_tile_size,
+                        height=self.player_tile_size,
                         bgcolor=ft.colors.YELLOW,
                         alignment=ft.alignment.center,
-                        margin=ft.Margin(.5, .5, .5, .5),
+                        margin=.1,
+                        border_radius=5,
                         border=ft.Border(
                             left=ft.BorderSide(1, "black"),
                             top=ft.BorderSide(1, "black"),
@@ -45,11 +46,12 @@ class Player:
                             bottom=ft.BorderSide(1, "black"),
                         ),
                     ),
-                    #on_drag_start=lambda e: self.dc.drag_start(e),
+                    on_drag_start=lambda e: self.dc.drag_start(e),
                     on_drag_complete=lambda e: self.dc.drag_complete(e),                    
                 )
                 for tile in player_tiles
             ],
+            spacing=2,
             alignment=ft.MainAxisAlignment.CENTER,
         )
         return {

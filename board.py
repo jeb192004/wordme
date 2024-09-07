@@ -3,26 +3,32 @@ from drag_controlls import DragControlls
 
 class Board:
     
-    def __init__(self, page):
+    def __init__(self, page, tiles):
         self.page = page
+        self.tiles = tiles
         self.board_size = 15
-        self.space_size = 22
-        self.space_size = 22
-        self.space_text_size=8
+        self.space_size = 25
+        self.space_text_size=10
         self.first_letter_position = 0
+        self.second_letter_position = 0
+        self.third_letter_position = 0
+        self.fourth_letter_position = 0
+        self.fifth_letter_position = 0
+        self.sixth_letter_position = 0
+        self.seventh_letter_position = 0
         self.board = ft.GridView(
             expand=1,
             runs_count=self.board_size,
             max_extent=self.space_size,
             child_aspect_ratio=1.0,
-            spacing=0.5,
+            spacing=1,
             run_spacing=1,
         )
 
-        self.dc = DragControlls(self.page, self)
+        self.dc = DragControlls(self.page, self, self.tiles)
 
     def set_up_board(self): 
-        drag_group = "unavailable" 
+        drag_group = "available" 
         start_space = [112]
         tw_space = [0, 7, 14, 105, 119, 210, 217, 224]
         dw_space = [16, 28, 32,42, 48,56, 64, 70, 154, 160, 168, 176, 182, 192, 196,208]
@@ -62,6 +68,7 @@ class Board:
                             on_will_accept=self.dc.drag_will_accept,
                             on_accept=lambda e: self.dc.drag_accept(e),
                             on_leave=self.dc.drag_leave,
+                            data=i
                         ),
                         
                     ],
@@ -72,7 +79,13 @@ class Board:
             )
         # Ensure the grid stays at the correct aspect ratio and doesn't stretch
         self.board.width = self.space_size * self.board_size + (self.board_size - 1) * 1  # Grid width based on square size and spacing
-
+        whole_board_size=self.board_size * self.space_size
+        scrollable_row = ft.Row(
+            controls=[self.board],  # Add GridView here
+            scroll=ft.ScrollMode.HIDDEN,  # Enable horizontal scrolling
+            width=whole_board_size,
+            height=whole_board_size,  # Adjust height to fit your content
+    )
         return self.board
 
     def get_board_index(self, board, index):
@@ -81,15 +94,16 @@ class Board:
         #index = row * self.board_size + col
         return board.controls[index]
     
-    def check_pos_available(self, board):
-        space = self.get_board_index(board, 112)
+    def check_pos_available(self, board, index):
+        space = board.controls[index]
+        print(space.controls[0].group)
         if len(space.controls) > 1:
             return False
         else:
             return True
         
     def update_group(self, index, group):
-        isAvailable = self.check_pos_available(self.board)
+        isAvailable = self.check_pos_available(self.board, index)
         if isAvailable:
             space = self.get_board_index(self.board, index)
             #print(space.controls[0])
@@ -107,20 +121,30 @@ class Board:
     def update_board(self, tile_rowCount, index):
         if tile_rowCount == 6:
             self.first_letter_position = index
-            indexArray = [index-15, index-30, index-45, index-60, index-75, index-90,
-                          index+15, index+30, index+45, index+60, index+75, index+90,
-                          index-1, index-2, index-3, index-4, index-5, index-6,
-                          index+1, index+2, index+3, index+4, index+5, index+6]
+            indexArray = [self.first_letter_position-15, self.first_letter_position+15, 
+                          self.first_letter_position+1, self.first_letter_position-1]
             self.highlightAvailableSpace(index, "available", indexArray)
         elif tile_rowCount == 5:
+            self.second_letter_position = index
             self.reset_spaces("available")
-            if index < self.first_letter_position-7 or index > self.first_letter_position+7:
-                indexArray = [self.first_letter_position-1, self.first_letter_position-2, self.first_letter_position-3, self.first_letter_position-4, self.first_letter_position-5,
-                              self.first_letter_position+1, self.first_letter_position+2, self.first_letter_position+3, self.first_letter_position+4, self.first_letter_position+5, self.first_letter_position+6]
+            indexArray = []
+            print(self.first_letter_position, self.second_letter_position)
+            if self.second_letter_position == self.first_letter_position-15:
+                indexArray = [self.second_letter_position-1, self.second_letter_position+1,
+                              self.second_letter_position-15, self.second_letter_position+30]
+            elif self.second_letter_position == self.first_letter_position+15:
+                indexArray = [self.second_letter_position+1, self.second_letter_position-1,
+                              self.second_letter_position-30, self.second_letter_position+15]
+            elif self.second_letter_position == self.first_letter_position-1:
+                indexArray = [self.second_letter_position-1, self.second_letter_position+2,
+                              self.second_letter_position-15, self.second_letter_position+15]
+            elif self.second_letter_position == self.first_letter_position+1:
+                indexArray = [self.second_letter_position+1, self.second_letter_position-2,
+                              self.second_letter_position-15, self.second_letter_position+15]
             self.highlightAvailableSpace(index, "available", indexArray)
                 
     def highlightAvailableSpace(self, index, group, indexArray):
-        print(index, indexArray)
+        #print(index, indexArray)
         for i in indexArray:
             space = self.board.controls[i]
             space.controls[0].group = group
@@ -130,7 +154,7 @@ class Board:
                     right=ft.BorderSide(2, "green"),
                     bottom=ft.BorderSide(2, "green"),
                 )
-            print(space.controls[0].content)
+            print(space.controls[0].group, i)
             space.update()
         
     def get_index_from_group(self, group):
@@ -142,8 +166,8 @@ class Board:
 
     def reset_spaces(self, group):
         for index, control in enumerate(self.board.controls):
-            print(control.controls[0].group, index)
             if control.controls[0].group == group:
+                #print(control.controls[0].group, index)
                 control.controls[0].group = "unavailable"
                 control.controls[0].content.border = None
                 self.board.update()

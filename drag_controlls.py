@@ -26,7 +26,7 @@ class DragControlls:
         tile = src.content.content.value
         #the players set of tiles
         tile_row = src.parent.controls
-        print(f"source tile group: {src.group}")
+        #print(f"source tile group: {src.data}")
             
         if index in self.available_spaces:
             new_draggable_tile = ft.Draggable(
@@ -37,7 +37,7 @@ class DragControlls:
                     height=30,
                     bgcolor=ft.colors.YELLOW,
                     alignment=ft.alignment.center,
-                    margin=ft.Margin(0.5, 0.5, 0.5, 0.5),
+                    #margin=ft.Margin(0.5, 0.5, 0.5, 0.5),
                     border_radius=5,
                     border=ft.Border(
                         left=ft.BorderSide(1, "black"),
@@ -48,6 +48,7 @@ class DragControlls:
                 ),
                 on_drag_start=lambda e: self.drag_start(e),
                 on_drag_complete=lambda e: self.drag_complete(e),
+                data=src.data
             )
             #index = self.bd.get_index_from_group("available")
             #update group from available to current_play

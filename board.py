@@ -79,14 +79,14 @@ class Board:
             )
         # Ensure the grid stays at the correct aspect ratio and doesn't stretch
         self.board.width = self.space_size * self.board_size + (self.board_size - 1) * 1  # Grid width based on square size and spacing
-        whole_board_size=self.board_size * self.space_size
+        whole_board_size=self.board_size * self.space_size +15
         scrollable_row = ft.Row(
             controls=[self.board],  # Add GridView here
             scroll=ft.ScrollMode.HIDDEN,  # Enable horizontal scrolling
             width=whole_board_size,
             height=whole_board_size,  # Adjust height to fit your content
     )
-        return self.board
+        return [self.board, scrollable_row]
 
     def get_board_index(self, board, index):
         #row = x
@@ -113,63 +113,4 @@ class Board:
         else:
             pass
         
-    def get_xy_from_index(self, index):
-        row = index // self.board_size
-        col = index % self.board_size
-        return [row, col]
-    
-    def update_board(self, tile_rowCount, index):
-        if tile_rowCount == 6:
-            self.first_letter_position = index
-            indexArray = [self.first_letter_position-15, self.first_letter_position+15, 
-                          self.first_letter_position+1, self.first_letter_position-1]
-            self.highlightAvailableSpace(index, "available", indexArray)
-        elif tile_rowCount == 5:
-            self.second_letter_position = index
-            self.reset_spaces("available")
-            indexArray = []
-            print(self.first_letter_position, self.second_letter_position)
-            if self.second_letter_position == self.first_letter_position-15:
-                indexArray = [self.second_letter_position-1, self.second_letter_position+1,
-                              self.second_letter_position-15, self.second_letter_position+30]
-            elif self.second_letter_position == self.first_letter_position+15:
-                indexArray = [self.second_letter_position+1, self.second_letter_position-1,
-                              self.second_letter_position-30, self.second_letter_position+15]
-            elif self.second_letter_position == self.first_letter_position-1:
-                indexArray = [self.second_letter_position-1, self.second_letter_position+2,
-                              self.second_letter_position-15, self.second_letter_position+15]
-            elif self.second_letter_position == self.first_letter_position+1:
-                indexArray = [self.second_letter_position+1, self.second_letter_position-2,
-                              self.second_letter_position-15, self.second_letter_position+15]
-            self.highlightAvailableSpace(index, "available", indexArray)
-                
-    def highlightAvailableSpace(self, index, group, indexArray):
-        #print(index, indexArray)
-        for i in indexArray:
-            space = self.board.controls[i]
-            space.controls[0].group = group
-            space.controls[0].content.border=ft.Border(
-                    left=ft.BorderSide(2, "green"),
-                    top=ft.BorderSide(2, "green"),
-                    right=ft.BorderSide(2, "green"),
-                    bottom=ft.BorderSide(2, "green"),
-                )
-            print(space.controls[0].group, i)
-            space.update()
-        
-    def get_index_from_group(self, group):
-        for index, control in enumerate(self.board.controls):
-            #print(control.controls[0].group, index)
-            if control.controls[0].group == group:
-                print(f"'current_play' found at index: {index}")
-                return index
-
-    def reset_spaces(self, group):
-        for index, control in enumerate(self.board.controls):
-            if control.controls[0].group == group:
-                #print(control.controls[0].group, index)
-                control.controls[0].group = "unavailable"
-                control.controls[0].content.border = None
-                self.board.update()
-            
     

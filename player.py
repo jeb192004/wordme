@@ -47,7 +47,8 @@ class Player:
                         ),
                     ),
                     on_drag_start=lambda e: self.dc.drag_start(e),
-                    on_drag_complete=lambda e: self.dc.drag_complete(e),                    
+                    on_drag_complete=lambda e: self.dc.drag_complete(e), 
+                    data={"value":tile, "points":1}                  
                 )
                 for tile in player_tiles
             ],

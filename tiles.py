@@ -33,6 +33,14 @@ class Tiles:
                       " ", " "]
         self.tile_bag = []
         self.player_tiles = []
+        #last tile checked
+        self.last_tile_checked = None
+        #row for player letters direction left or right/col for player letters direction up or down
+        self.row_col = None
+        #array of tiles played
+        self.lettersPlayed = []
+        #array to hold word score modifiers
+        self.wordScoreModifier = []
 
     def pick_seven_letters(self):
         self.player_tiles
@@ -64,3 +72,53 @@ class Tiles:
             if space.controls[0].group == "available":
                 available_spaces.append(index)
         return available_spaces
+    
+    def play(self, board, alert):
+        self.lettersPlayed = []
+        isValidPlacement = False
+        for item in board.controls:
+            index = item.controls[0].data
+            if index==112:
+                if len(item.controls) < 2:
+                    return "no tile played on start position"
+            if len(item.controls) > 1 and item.controls[1].group == "available":
+                space_value = item.controls[0].content.content.value
+                if space_value == "TW" or space_value == "DW":
+                    if space_value=="TW":
+                        self.wordScoreModifier.append(3)
+                    if space_value=="DW":
+                        self.wordScoreModifier.append(2)
+                #if self.last_tile_checked is not None:
+                #isValidPlacement = self.check_valid_placement(board, index)
+                tile_data=dict(item.controls[1].data)
+                tile_data['index']=index
+                self.lettersPlayed.append(tile_data)
+                #print(space_value, index)
+                #self.last_tile_checked=index
+
+        validArray = self.check_valid_placement(board)
+        isValid = validArray[0]
+        validText = validArray[1]
+        print(isValid, validText)
+        if isValid==False:
+            alert.alert(validText)
+        return self.lettersPlayed
+    
+    def check_valid_placement(self, board):
+
+        add_tiles=[-15, 15, -1, 1]
+        for t in self.lettersPlayed:
+            invalidCount=0
+            
+            if t["index"]==112:
+                pass
+            else:
+                for num in add_tiles:
+                    num = t["index"] + num
+                    if len(board.controls[num].controls)<2:
+                        invalidCount+=1
+                if invalidCount==4:
+                    return [False, "Invalid word placement"]
+            
+        return [True, "Valid word placement"]
+        

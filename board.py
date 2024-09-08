@@ -7,7 +7,7 @@ class Board:
         self.page = page
         self.tiles = tiles
         self.board_size = 15
-        self.space_size = 25
+        self.space_size = 22
         self.space_text_size=10
         self.first_letter_position = 0
         self.second_letter_position = 0
@@ -23,6 +23,7 @@ class Board:
             child_aspect_ratio=1.0,
             spacing=1,
             run_spacing=1,
+            
         )
 
         self.dc = DragControlls(self.page, self, self.tiles)
@@ -85,6 +86,7 @@ class Board:
             scroll=ft.ScrollMode.HIDDEN,  # Enable horizontal scrolling
             width=whole_board_size,
             height=whole_board_size,  # Adjust height to fit your content
+            
     )
         return [self.board, scrollable_row]
 

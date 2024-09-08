@@ -35,7 +35,26 @@ def main(page: ft.Page):
     tile_row = player["tile_row"]
     #print(draggable_tiles)
 
-    bottom_appbar = ft.BottomAppBar(
+    
+    #isStartPosAvail = bd.check_pos_available(board)
+    
+    def play_click(e):
+        wordsPlayed = tiles.play(board, alert)
+        print(wordsPlayed)
+
+    #print(isStartPosAvail)
+    
+    # Layout all components in a column
+    page.floating_action_button = ft.FloatingActionButton(icon=ft.icons.PLAY_ARROW_ROUNDED, on_click=play_click,)
+    page.floating_action_button_location = ft.FloatingActionButtonLocation.CENTER_DOCKED
+
+    page.appbar = ft.AppBar(
+        title=player_name_row, 
+        center_title=True,
+        bgcolor=ft.colors.LIGHT_BLUE_ACCENT,
+        automatically_imply_leading=False,
+    )
+    page.bottom_appbar = ft.BottomAppBar(
             bgcolor=ft.colors.LIGHT_BLUE_ACCENT,
             shape=ft.NotchShape.AUTO,
             height=64,
@@ -51,61 +70,21 @@ def main(page: ft.Page):
                 ]
             ),
         )
-    #isStartPosAvail = bd.check_pos_available(board)
-    def open_pagelet_end_drawer(e):
-        pagelet.end_drawer.open = True
-        pagelet.end_drawer.update()
-    def play_click(e):
-        wordsPlayed = tiles.play(board, alert)
-        print(wordsPlayed)
-
-    #print(isStartPosAvail)
-    pagelet = ft.Pagelet(appbar=ft.AppBar(
-            title=ft.Text(page.title), bgcolor=ft.colors.LIGHT_BLUE_ACCENT
-        ),
-        content=ft.Container(
-            content=ft.Column(
-                controls=[
-                    player_name_row,
-                    boardRow,
-                    tile_row,
-                    ft.Row(controls=[
-                        ft.Container(bgcolor=ft.colors.TRANSPARENT, expand=True, height=30),
-                    ]),
-                ],
-                alignment=ft.MainAxisAlignment.CENTER,
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            )
-        ),bottom_app_bar=bottom_appbar
-        ,end_drawer=ft.NavigationDrawer(
-            controls=[
-                ft.NavigationDrawerDestination(
-                    icon=ft.icons.ADD_TO_HOME_SCREEN_SHARP, label="Item 1"
-                ),
-                ft.NavigationDrawerDestination(
-                    icon=ft.icons.ADD_COMMENT, label="Item 2"
-                ),
-            ],
-        ),
-        floating_action_button=ft.FloatingActionButton(icon=ft.icons.PLAY_ARROW_ROUNDED, on_click=play_click, ),
-        floating_action_button_location=ft.FloatingActionButtonLocation.CENTER_DOCKED,
-        )
-    # Layout all components in a column
-    '''page.add(
+    
+    page.add(
         ft.Column(
             controls=[
-                player_name_row,
-                board,
+                
+                boardRow,
                 tile_row,
+                
+                
             ],
             alignment=ft.MainAxisAlignment.CENTER,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
         )
-    )'''
-    page.add(pagelet)
-    if page.platform == ft.PagePlatform.LINUX or page.platform == ft.PagePlatform.MACOS or page.platform == ft.PagePlatform.WINDOWS:
-        pagelet.height=page.window.height
-        pagelet.update()
+    )
+    
     
     #bd.update_group(112, "available")
 

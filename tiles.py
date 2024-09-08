@@ -102,6 +102,8 @@ class Tiles:
         print(isValid, validText)
         if isValid==False:
             alert.alert(validText)
+        else:
+            alert.alert(validText)
         return self.lettersPlayed
     
     def check_valid_placement(self, board):

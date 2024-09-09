@@ -1,10 +1,12 @@
 import flet as ft
 from drag_controlls import DragControlls
+import time
 
 class Board:
     
     def __init__(self, page, tiles):
         self.page = page
+        self.last_click_time = 0
         self.tiles = tiles
         self.board_size = 15
         self.space_size = 22
@@ -23,10 +25,9 @@ class Board:
             child_aspect_ratio=1.0,
             spacing=1,
             run_spacing=1,
-            
-        )
-
-        self.dc = DragControlls(self.page, self, self.tiles)
+            )
+        self.board_container=None
+        self.dc = DragControlls(self.page, self, self.tiles, self)
 
     def set_up_board(self): 
         drag_group = "available" 
@@ -78,24 +79,38 @@ class Board:
                 )
                 
             )
-        # Ensure the grid stays at the correct aspect ratio and doesn't stretch
-        self.board.width = self.space_size * self.board_size + (self.board_size - 1) * 1  # Grid width based on square size and spacing
+        #self.board.width = self.space_size * self.board_size + (self.board_size - 1) * 1  # Grid width based on square size and spacing
         whole_board_size=self.board_size * self.space_size +15
-        scrollable_row = ft.Row(
-            controls=[self.board],  # Add GridView here
-            scroll=ft.ScrollMode.HIDDEN,  # Enable horizontal scrolling
+        
+        self.board_container = ft.Container(
+            content=self.board,
             width=whole_board_size,
-            height=whole_board_size,  # Adjust height to fit your content
-            
-    )
+            height=whole_board_size,
+            #bgcolor="blue",
+            border_radius=5,
+            on_click=lambda e: self.double_click(),
+            scale=ft.transform.Scale(scale=1),
+            animate_scale=ft.animation.Animation(600, ft.AnimationCurve.EASE_IN_OUT),
+        )   
+        scrollable_row = ft.Row(
+            expand=True,
+            controls=[self.board_container],  # Add GridView here
+            scroll=ft.ScrollMode.AUTO,  # Enable horizontal scrolling
+            width=whole_board_size-1,
+            height=whole_board_size-1,
+            )
         return [self.board, scrollable_row]
 
-    def get_board_index(self, board, index):
-        #row = x
-        #col = y
-        #index = row * self.board_size + col
-        return board.controls[index]
-    
+    def animate(self, scale):
+            self.board_container.scale = scale
+            self.page.update()
+
+    def double_click(self):        
+        current_time = time.time()
+        if current_time - self.last_click_time < 0.5:  # 300 milliseconds threshold
+            self.animate(1)
+        self.last_click_time = current_time
+
     def check_pos_available(self, board, index):
         space = board.controls[index]
         print(space.controls[0].group)
@@ -104,15 +119,5 @@ class Board:
         else:
             return True
         
-    def update_group(self, index, group):
-        isAvailable = self.check_pos_available(self.board, index)
-        if isAvailable:
-            space = self.get_board_index(self.board, index)
-            #print(space.controls[0])
-            space.controls[0].group = group
-            #print(space.controls[0].group)
-            space.update()
-        else:
-            pass
-        
+
     

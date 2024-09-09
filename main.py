@@ -23,7 +23,7 @@ def main(page: ft.Page):
     boardArray = bd.set_up_board()
     board = boardArray[0]
     boardRow = boardArray[1]
-    dc = DragControlls(page, board, tiles)
+    dc = DragControlls(page, board, tiles, bd)
     p = Player(page, dc)
     
 
@@ -31,7 +31,7 @@ def main(page: ft.Page):
     
     player_name_row = p.set_up_player_names()
     player = p.set_up_player()
-    draggable_tiles = player["draggable_tiles"]
+    #draggable_tiles = player["draggable_tiles"]
     tile_row = player["tile_row"]
     #print(draggable_tiles)
 
@@ -85,8 +85,6 @@ def main(page: ft.Page):
         )
     )
     
-    
-    #bd.update_group(112, "available")
 
 # Run the app
 ft.app(target=main)

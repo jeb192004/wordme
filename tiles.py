@@ -1,9 +1,11 @@
-
+import flet as ft
 import random
 
 tiles_placed=[]
 class Tiles:
     def __init__(self):
+        self.player_tile_size = 45
+        self.player_tile_text_size = 20
         self.tiles = ["A", "A", "A", "A", "A", "A", "A", "A", "A",
                       "B", "B",
                       "C", "C", "C", "C",
@@ -51,8 +53,51 @@ class Tiles:
         #print(tile_bag)
         return player_tiles
 
-    def set_up_tile_list(self):
-        pass
+    def player_drag_target(self, dc):
+        return ft.DragTarget(
+                group="available",
+                content=ft.Container(
+                    #content=ft.Text(letter, color="black", size=self.player_tile_text_size),
+                    width=self.player_tile_size,
+                    height=self.player_tile_size,
+                    bgcolor=ft.colors.TRANSPARENT,
+                    alignment=ft.alignment.center,
+                    margin=.1,
+                    border_radius=5,
+                    border=ft.Border(
+                        left=ft.BorderSide(1, "black"),
+                        top=ft.BorderSide(1, "black"),
+                        right=ft.BorderSide(1, "black"),
+                        bottom=ft.BorderSide(1, "black"),
+                        ),
+                    ),
+                    on_will_accept=dc.drag_will_accept,
+                    on_accept=lambda e: dc.drag_accept(e),
+                    on_leave=dc.drag_leave,
+                    data=""
+                )
+    def player_tile(self, letter, points, dc):
+        return ft.Draggable(
+                    group="available",
+                    content=ft.Container(
+                        content=ft.Text(letter, color="black", size=self.player_tile_text_size),
+                        width=self.player_tile_size,
+                        height=self.player_tile_size,
+                        bgcolor=ft.colors.YELLOW,
+                        alignment=ft.alignment.center,
+                        margin=.1,
+                        border_radius=5,
+                        border=ft.Border(
+                            left=ft.BorderSide(1, "black"),
+                            top=ft.BorderSide(1, "black"),
+                            right=ft.BorderSide(1, "black"),
+                            bottom=ft.BorderSide(1, "black"),
+                        ),
+                    ),
+                on_drag_start=lambda e: dc.drag_start(e),
+                on_drag_complete=lambda e: dc.drag_complete(e), 
+                data={"value":letter, "points":points}                  
+                )
        
     def tiles_placed(self):
         if len(tiles_placed) == 0:

@@ -5,8 +5,7 @@ from drag_controlls import DragControlls
 class Player:
     def __init__(self, page, dc):
         self.page = page
-        self.player_tile_size = 45
-        self.player_tile_text_size = 20
+        
         self.player_names = ["Player 1","|", "Player 2"]
         self.dc = dc
     
@@ -29,27 +28,10 @@ class Player:
         # Create draggable tiles for the player
         tile_row = ft.Row(
             controls=[
-                ft.Draggable(
-                    group="available",
-                    content=ft.Container(
-                        content=ft.Text(tile, color="black", size=self.player_tile_text_size),
-                        width=self.player_tile_size,
-                        height=self.player_tile_size,
-                        bgcolor=ft.colors.YELLOW,
-                        alignment=ft.alignment.center,
-                        margin=.1,
-                        border_radius=5,
-                        border=ft.Border(
-                            left=ft.BorderSide(1, "black"),
-                            top=ft.BorderSide(1, "black"),
-                            right=ft.BorderSide(1, "black"),
-                            bottom=ft.BorderSide(1, "black"),
-                        ),
-                    ),
-                    on_drag_start=lambda e: self.dc.drag_start(e),
-                    on_drag_complete=lambda e: self.dc.drag_complete(e), 
-                    data={"value":tile, "points":1}                  
-                )
+                ft.Stack([
+                    Tiles().player_drag_target(self.dc),
+                    Tiles().player_tile(tile, 1, self.dc)
+                ])
                 for tile in player_tiles
             ],
             spacing=2,

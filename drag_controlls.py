@@ -35,7 +35,7 @@ class DragControlls:
             draggable_tile_size = 45
             draggable_tile__text_size = 20
         else:
-            self.bd.animate(2)
+            self.bd.animate(1.8)
         #if index in self.available_spaces:
         new_draggable_tile = ft.Draggable(
                 group="available",

@@ -74,11 +74,8 @@ def main(page: ft.Page):
     page.add(
         ft.Column(
             controls=[
-                
                 boardRow,
                 tile_row,
-                
-                
             ],
             alignment=ft.MainAxisAlignment.CENTER,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,

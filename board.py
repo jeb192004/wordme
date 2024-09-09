@@ -86,7 +86,6 @@ class Board:
             content=self.board,
             width=whole_board_size,
             height=whole_board_size,
-            #bgcolor="blue",
             border_radius=5,
             on_click=lambda e: self.double_click(),
             scale=ft.transform.Scale(scale=1),
@@ -96,8 +95,8 @@ class Board:
             expand=True,
             controls=[self.board_container],  # Add GridView here
             scroll=ft.ScrollMode.AUTO,  # Enable horizontal scrolling
-            width=whole_board_size-1,
-            height=whole_board_size-1,
+            width=whole_board_size,
+            height=whole_board_size,
             )
         return [self.board, scrollable_row]
 
@@ -107,7 +106,7 @@ class Board:
 
     def double_click(self):        
         current_time = time.time()
-        if current_time - self.last_click_time < 0.5:  # 300 milliseconds threshold
+        if current_time - self.last_click_time < 0.5:
             self.animate(1)
         self.last_click_time = current_time
 

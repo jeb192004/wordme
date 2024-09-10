@@ -7,9 +7,12 @@ class Board:
     def __init__(self, page, tiles):
         self.page = page
         self.last_click_time = 0
+        self.current_scale = 1
+        self.isZoomed = True
         self.tiles = tiles
         self.board_size = 15
-        self.space_size = 22
+        self.space_size = 22*2
+        self.zoomed_out_board_size = 0
         self.space_text_size=10
         self.first_letter_position = 0
         self.second_letter_position = 0
@@ -80,34 +83,68 @@ class Board:
                 
             )
         #self.board.width = self.space_size * self.board_size + (self.board_size - 1) * 1  # Grid width based on square size and spacing
-        whole_board_size=self.board_size * self.space_size +15
+        self.zoomed_out_board_size=self.board_size * self.space_size +15
         
         self.board_container = ft.Container(
             content=self.board,
-            width=whole_board_size,
-            height=whole_board_size,
+            width=self.zoomed_out_board_size,
+            height=self.zoomed_out_board_size,
             border_radius=5,
             on_click=lambda e: self.double_click(),
-            scale=ft.transform.Scale(scale=1),
+            scale=ft.transform.Scale(scale=self.current_scale),
             animate_scale=ft.animation.Animation(600, ft.AnimationCurve.EASE_IN_OUT),
         )   
         scrollable_row = ft.Row(
             expand=True,
             controls=[self.board_container],  # Add GridView here
-            scroll=ft.ScrollMode.AUTO,  # Enable horizontal scrolling
-            width=whole_board_size,
-            height=whole_board_size,
+            scroll=ft.ScrollMode.ALWAYS,  # Enable horizontal scrolling
+            width=self.zoomed_out_board_size,
+            height=self.zoomed_out_board_size,
             )
-        return [self.board, scrollable_row]
+        scrollable_row_container = ft.Container(
+            content=scrollable_row,
+            width=self.board_size * (self.space_size / 2) +15,
+            height=self.board_size * (self.space_size / 2) +15,
+            border_radius=5,
+            bgcolor=ft.colors.BLACK
+        )
+        return [self.board, scrollable_row_container]
 
     def animate(self, scale):
-            self.board_container.scale = scale
+            if self.isZoomed:
+                self.board.max_extent = self.space_size / 2
+                self.board.width = self.board_size * (self.space_size / 2) +15
+                self.board.height = self.board_size * (self.space_size / 2) +15
+                self.board_container.width = self.board_size * (self.space_size / 2) +15
+                self.board_container.height = self.board_size * (self.space_size / 2) +15
+                self.isZoomed = False
+            else:
+                self.board.max_extent = self.space_size
+                self.board.width = self.zoomed_out_board_size
+                self.board.height = self.zoomed_out_board_size
+                self.board_container.width = self.zoomed_out_board_size
+                self.board_container.height = self.zoomed_out_board_size
+                self.isZoomed = True
+            gridItemsArray = self.board.controls
+            for stack in gridItemsArray:
+                if len(stack.controls)==1:
+                    #print("drag target only")
+                    pass
+                elif len(stack.controls)>1:
+                    #print("drag target and dragable")
+                    pass
+            print(self.board.parent)
+            self.current_scale = scale
+            #self.board_container.scale = scale
             self.page.update()
 
     def double_click(self):        
         current_time = time.time()
         if current_time - self.last_click_time < 0.5:
-            self.animate(1)
+            if self.current_scale == 1:
+                self.animate(0)
+            else:
+                self.animate(1)
         self.last_click_time = current_time
 
     def check_pos_available(self, board, index):

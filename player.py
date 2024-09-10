@@ -39,8 +39,9 @@ class Player:
         )
         player_row_stack = ft.Stack([
             ft.Row(controls=[
-                    ft.Container(bgcolor=ft.colors.BLUE_ACCENT_400, expand=True, height=10),
-                ]),
+                    ft.Container(bgcolor=ft.colors.BLUE_ACCENT_400, expand=False, height=10, width=45*7+20),
+                    
+                ],alignment=ft.MainAxisAlignment.CENTER,),
                 ft.Container(content=tile_row,
                              margin=ft.Margin(0, 0, 0, 5))
         ],alignment=ft.alignment.bottom_center,)
